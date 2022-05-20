@@ -28,7 +28,7 @@ type Config struct {
 }
 
 type sonar struct {
-	Issues []Issue
+	Issues []Issue `json:"issues"`
 }
 
 type Issue struct {
@@ -49,8 +49,8 @@ type PrimaryLocation struct {
 type TextRange struct {
 	StartLine   int `json:"startLine"`
 	EndLine     int `json:"endLine"`
-	StartColumn int `json:"startColumn"`
-	EndColumn   int `json:"endColumn"`
+	StartColumn int `json:"startColumn,omitempty"`
+	EndColumn   int `json:"endColumn,omitempty"`
 }
 type phpmd struct {
 	Version     string `json:"version"`
@@ -111,7 +111,7 @@ func parseJson(config *Config) (issues *sonar) {
 			issue := Issue{}
 			issue.EngineId = "phpmd"
 			issue.RuleId = data.Files[i].Violations[violationCnt].Rule
-			issue.Typ = "VULNERABILITY"
+			issue.Typ = "CODE_SMELL"
 			issue.Severity = getServerityByPriority(data.Files[i].Violations[violationCnt].Priority)
 			issue.PrimaryLocation.Message = data.Files[i].Violations[violationCnt].Description
 			issue.PrimaryLocation.FilePath = data.Files[i].Name
@@ -130,6 +130,12 @@ func getServerityByPriority(priority int) string {
 	switch priority {
 	case 1:
 		return "BLOCKER"
+	case 2:
+		return "CRITICAL"
+	case 3:
+		return "MAJOR"
+	case 4:
+		return "MINOR"
 	}
 	return "INFO"
 }
