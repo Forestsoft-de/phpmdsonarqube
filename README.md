@@ -1,10 +1,17 @@
+### Description
+This project converts phpmd json report into sonarqube format.
+
+
 ### Local Build
 
 ```bash
-docker build -t forestsoft/phpmdsonarqube .
+./build.sh
 ```
 
-### Run
+### Push image
+./build.sh push
+
+### Example Usage
 ```bash
 docker run -v$(pwd):/workdir --rm  phpmdsonarqube -input /workdir/tmp/phpmd.json -output /workdir/tmp/sonarqube.json
 ```
