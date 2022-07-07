@@ -31,6 +31,12 @@ jobs:
         echo "Flags:     ${{ steps.buildx.outputs.flags }}"
         echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
     
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: forestsoft/phpmdsonarqube
+
     - name: Build Docker images
       # You may pin to the exact commit or the version.
       # uses: docker/build-push-action@e551b19e49efd4e98792db7592c17c09b89db8d8
@@ -53,6 +59,8 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }} && ${{env.GITHUB_BASE_REF == 'main' }}
       uses: docker/build-push-action@v3.0.0
       with:
+        tags: |
+          forestsoft/phpmdsonarqube:latest
         # Push is a shorthand for --output=type=registry
         push: true
         
