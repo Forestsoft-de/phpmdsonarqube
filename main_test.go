@@ -7,13 +7,16 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"phpmdsonarqube/configuration"
+	"phpmdsonarqube/reportreader"
+	"phpmdsonarqube/sonar"
 	"reflect"
 	"testing"
 )
 
 func TestArgs(t *testing.T) {
 	t.Run("Args should parsed", func(t *testing.T) {
-		expectedConf := Config{"datasets/sonar.json", "output.json"}
+		expectedConf := configuration.Config{Input: "datasets/sonar.json", Output: "output.json"}
 
 		actual, buffer, err := parseArgs("phpmdsonaqube", []string{"-input", "datasets/sonar.json", "-output", "output.json"})
 
@@ -21,12 +24,12 @@ func TestArgs(t *testing.T) {
 			t.Errorf("Actual is nil, buffer: '%s', error: '%s'", buffer, err)
 		}
 
-		if actual.input != expectedConf.input {
-			t.Errorf("Test failed for input file, expected: '%s', got:  '%s'", expectedConf.input, actual.input)
+		if actual.Input != expectedConf.Input {
+			t.Errorf("Test failed for input file, expected: '%s', got:  '%s'", expectedConf.Input, actual.Input)
 		}
 
-		if actual.output != expectedConf.output {
-			t.Errorf("Test failed for output file, expected: '%s', got:  '%s'", expectedConf.output, actual.input)
+		if actual.Output != expectedConf.Output {
+			t.Errorf("Test failed for output file, expected: '%s', got:  '%s'", expectedConf.Output, actual.Input)
 		}
 	})
 
@@ -34,8 +37,8 @@ func TestArgs(t *testing.T) {
 
 func TestParseJson(t *testing.T) {
 	t.Run("parseJson should return files with violations", func(t *testing.T) {
-		config := &Config{input: "datasets/phpmd.json", output: "output.json"}
-		issues := parseJson(config)
+		config := &configuration.Config{Input: "datasets/phpmd.json", Output: "output.json"}
+		issues := reportreader.ParseJson(config)
 
 		if len(issues.Issues) != 4 {
 			t.Errorf("parseJson should return 4 issues, got:  '%d'", len(issues.Issues))
@@ -45,24 +48,24 @@ func TestParseJson(t *testing.T) {
 
 func TestWriteJson(t *testing.T) {
 	t.Run("writeJson should create correct json file", func(t *testing.T) {
-		config := &Config{input: "datasets/phpmd.json", output: "/tmp/output.json"}
+		config := &configuration.Config{Input: "datasets/phpmd.json", Output: "/tmp/output.json"}
 
-		sonarConfig := &sonar{}
+		sonarConfig := &sonar.Sonar{}
 
-		issues := make([]Issue, 0)
+		issues := make([]sonar.Issue, 0)
 
-		textRange := TextRange{}
+		textRange := sonar.TextRange{}
 		textRange.StartLine = 30
 		textRange.EndLine = 30
 		textRange.StartColumn = 9
 		textRange.EndColumn = 14
 
-		location := PrimaryLocation{}
+		location := sonar.PrimaryLocation{}
 		location.FilePath = "sources/A.java"
 		location.Message = "fully-fleshed issue"
 		location.TextRange = textRange
 
-		issue1 := Issue{
+		issue1 := sonar.Issue{
 			EngineId: "phpmd",
 			RuleId:   "S1234",
 			Typ:      "CODE_SMELL",
@@ -90,8 +93,8 @@ func TestWriteJson(t *testing.T) {
 		}
 
 		var err error
-		expectedJson := sonar{}
-		actualJson := sonar{}
+		expectedJson := sonar.Sonar{}
+		actualJson := sonar.Sonar{}
 
 		err = json.Unmarshal([]byte(expected), &expectedJson)
 		if err != nil {

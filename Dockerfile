@@ -7,6 +7,9 @@ COPY go.mod ./
 RUN go mod download
 
 COPY *.go ./
+
+RUN go test ./...
+
 RUN go build -o /phpmdsonaqube
 
 ENTRYPOINT [ "/phpmdsonaqube" ]
