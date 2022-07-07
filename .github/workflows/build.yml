@@ -44,7 +44,7 @@ jobs:
       with:
         images: forestsoft/phpmdsonarqube
 
-    - name: Build Docker images
+    - name: Test Docker images
       # You may pin to the exact commit or the version.
       # uses: docker/build-push-action@e551b19e49efd4e98792db7592c17c09b89db8d8
       uses: docker/build-push-action@v3.0.0
@@ -65,16 +65,9 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build Docker images
+    - name: Push Docker images
       # You may pin to the exact commit or the version.
       # uses: docker/build-push-action@e551b19e49efd4e98792db7592c17c09b89db8d8
       if: ${{ github.event_name != 'pull_request' }} && ${{env.GITHUB_BASE_REF == 'main' }}
-      uses: docker/build-push-action@v3.0.0
-      with:
-        context: .
-        file: ./Dockerfile
-        tags: |
-          forestsoft/phpmdsonarqube:latest
-        # Push is a shorthand for --output=type=registry
-        push: true
+      run: docker push forestsoft/phpmdsonarqube:latest
         
