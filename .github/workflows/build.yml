@@ -69,5 +69,14 @@ jobs:
       # You may pin to the exact commit or the version.
       # uses: docker/build-push-action@e551b19e49efd4e98792db7592c17c09b89db8d8
       if: ${{ github.event_name != 'pull_request' }} && ${{env.GITHUB_BASE_REF == 'main' }}
-      run: docker push forestsoft/phpmdsonarqube:latest
+      uses: docker/build-push-action@v3.0.0
+      with:
+        # Push is a shorthand for --output=type=registry
+        context: .
+        file: ./Dockerfile
+        tags: |
+          forestsoft/phpmdsonarqube:latest
+        # Push is a shorthand for --output=type=registry
+        push: true
+
         
