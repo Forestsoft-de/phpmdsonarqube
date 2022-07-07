@@ -9,6 +9,7 @@ import (
 	"log"
 	"phpmdsonarqube/configuration"
 	"phpmdsonarqube/reportreader"
+	"phpmdsonarqube/reportwriter"
 	"phpmdsonarqube/sonar"
 	"reflect"
 	"testing"
@@ -78,7 +79,7 @@ func TestWriteJson(t *testing.T) {
 		issues = append(issues, issue1)
 		sonarConfig.Issues = issues
 
-		writeJson(config, sonarConfig)
+		reportwriter.WriteJson(config, sonarConfig)
 
 		expected, err1 := ioutil.ReadFile("datasets/sonar.json")
 
