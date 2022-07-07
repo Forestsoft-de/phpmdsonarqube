@@ -2,14 +2,12 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"flag"
-	"io/ioutil"
 	"log"
 	"os"
 	"phpmdsonarqube/configuration"
 	"phpmdsonarqube/reportreader"
-	"phpmdsonarqube/sonar"
+	"phpmdsonarqube/reportwriter"
 )
 
 func main() {
@@ -22,22 +20,9 @@ func main() {
 	}
 
 	issues := reportreader.ParseJson(config)
-	writeJson(config, issues)
+	reportwriter.WriteJson(config, issues)
 }
 
-func writeJson(config *configuration.Config, issues *sonar.Sonar) {
-	json, err := json.Marshal(issues)
-
-	if err != nil {
-		log.Fatal("Could not marshal json", err)
-	}
-
-	err = ioutil.WriteFile(config.Output, json, 0644)
-
-	if err != nil {
-		log.Fatal("Could not write file", config.Output, err)
-	}
-}
 func parseArgs(progname string, args []string) (config *configuration.Config, output string, err error) {
 	flags := flag.NewFlagSet(progname, flag.ContinueOnError)
 	var buf bytes.Buffer
