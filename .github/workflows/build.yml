@@ -59,6 +59,8 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }} && ${{env.GITHUB_BASE_REF == 'main' }}
       uses: docker/build-push-action@v3.0.0
       with:
+        context: .
+        file: ./Dockerfile
         tags: |
           forestsoft/phpmdsonarqube:latest
         # Push is a shorthand for --output=type=registry
